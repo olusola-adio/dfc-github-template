@@ -13,6 +13,11 @@ A web project called $Prefix
 A unit test project called $Prefix.UnitTests
 A solution file called $Prefix.sln
 
+.PARAMETER ProjectType
+The type of project to create. Valid options are currently:
+* webapp
+* function
+
 .EXAMPLE
 New-InitialDotNetCoreProjects.ps1 --Prefix SomeProject
 
@@ -21,18 +26,47 @@ New-InitialDotNetCoreProjects.ps1 --Prefix SomeProject
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)]
-    [string] $Prefix
+    [string] $Prefix,
+    [Parameter(Mandatory=$true)]
+    [ValidateSet("webapp", "function")]
+    [string] $ProjectType
 )
 
-function New-BasicProject {
+function New-WebProject {
     param(
         [Parameter(Mandatory=$true)]
-        [string] $Name    
+        [string] $Name
     )
 
     $testProject = $Name + ".UnitTests"
 
     & "dotnet" "new" "web" "--name" $Name
+    & "dotnet" "new" "xunit" "--name" $testProject
+
+    & "dotnet" "new" "sln" "--name" $Name
+    & "dotnet" "sln" "add" "$($Name)/$($Name).csproj"
+    & "dotnet" "sln" "add" "$($testProject)/$($testProject).csproj"
+}
+
+function New-FunctionProject {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $Name
+    )
+
+    $testProject = $Name + ".UnitTests"
+
+    # Ensure the azure function dotnet cli template is installed
+    & "dotnet" "new" "-i" "Microsoft.Azure.WebJobs.ProjectTemplates::2.0.10369" | Out-Null
+
+    New-Item -Path $Name -ItemType Directory
+    Push-Location
+    Set-Location -Path $Name
+
+    & "dotnet" "new" "function" "--name" $Name
+
+    Pop-Location
+
     & "dotnet" "new" "xunit" "--name" $testProject
 
     & "dotnet" "new" "sln" "--name" $Name
@@ -70,8 +104,17 @@ function Invoke-PopulateProjectGuidFromSolution {
     }
 }
 
-Write-Output "Creating template project for '$Prefix'"
-New-BasicProject -Name $Prefix
+Write-Output "Creating template project for '$Prefix' with type '$ProjectType'"
+
+switch($ProjectType) {
+    "webapp" { 
+        New-WebProject -Name $Prefix
+    }
+    "function" { 
+        New-FunctionProject -Name $Prefix
+    }
+}
+
 Write-Output "Updating project files with ProjectGuids from solution"
 Invoke-PopulateProjectGuidFromSolution -SolutionName "$($Prefix).sln"
 Write-Output "Done"
