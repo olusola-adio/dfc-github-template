@@ -21,7 +21,7 @@ New-InitialDotNetCoreProjects.ps1 --Prefix SomeProject
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)]
-    [string] $Name
+    [string] $Prefix
 )
 
 function New-BasicProject {
@@ -70,8 +70,8 @@ function Invoke-PopulateProjectGuidFromSolution {
     }
 }
 
-Write-Output "Creating template project for '$Name'"
-New-BasicProject -Name $Name
+Write-Output "Creating template project for '$Prefix'"
+New-BasicProject -Name $Prefix
 Write-Output "Updating project files with ProjectGuids from solution"
-Invoke-PopulateProjectGuidFromSolution -SolutionName "$($Name).sln"
+Invoke-PopulateProjectGuidFromSolution -SolutionName "$($Prefix).sln"
 Write-Output "Done"
