@@ -30,7 +30,6 @@ function New-BasicProject {
         [string] $Name    
     )
 
-
     $testProject = $Name + ".UnitTests"
 
     & "dotnet" "new" "web" "--name" $Name
@@ -49,11 +48,16 @@ function Invoke-PopulateProjectGuidFromSolution {
 
     $solutionContent = Get-Content -Path $SolutionName
 
-    $projects = $solutionContent | Select-String -Pattern "^Project\(.*\) = `"(.*)`", `"(.*)`", `"(.*)`"$"
+    # Projects in the solution file have a distict structure:
+    # Project("<Project Type ID>") = "<Project Name>", "<Path To Project>", "<Project Guid>"
+    # The following searches for lines that match that pattern, and iterates over them,  placing
+    # the Project Guid into the project file.
+
+    $projects = $solutionContent | Select-String -Pattern "^Project\(.*\) = `".*`", `"(.*)`", `"(.*)`"$"
     
     foreach($project in $projects) {
-        $projectFile = Resolve-Path $project.Matches.Groups[2].Value
-        $projectGuid = $project.Matches.Groups[3].Value
+        $projectFile = Resolve-Path $project.Matches.Groups[1].Value
+        $projectGuid = $project.Matches.Groups[2].Value
 
         [xml]$projectDocument = Get-Content -Path  $projectFile
         
