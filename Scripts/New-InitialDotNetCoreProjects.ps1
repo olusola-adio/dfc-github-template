@@ -92,7 +92,7 @@ function Invoke-PopulateProjectGuidFromSolution {
     # The following searches for lines that match that pattern, and iterates over them,  placing
     # the Project Guid into the project file.
 
-    $projects = $solutionContent | Select-String -Pattern "^Project\(.*\) = `".*`", `"(.*)`", `"(.*)`"$"
+    $projects = $solutionContent | Select-String -Pattern '^Project\(.*\) = ".*", "(.*)", "(.*)"$'
     
     foreach($project in $projects) {
         $projectFile = Resolve-Path $project.Matches.Groups[1].Value
