@@ -15,11 +15,13 @@ A solution file called $Prefix.sln
 
 .PARAMETER ProjectType
 The type of project to create. Valid options are currently:
-* webapp
+* web
+* console
+* classlib
 * function
 
 .EXAMPLE
-New-InitialDotNetCoreProjects.ps1 --Prefix SomeProject
+New-InitialDotNetCoreProjects.ps1 --Prefix SomeProject --ProjectType web
 
 #>
 
@@ -28,19 +30,22 @@ param(
     [Parameter(Mandatory=$true)]
     [string] $Prefix,
     [Parameter(Mandatory=$true)]
-    [ValidateSet("webapp", "function")]
+    [ValidateSet("web", "console", "classlib", "function")]
     [string] $ProjectType
 )
 
-function New-WebProject {
+function New-BasicProject {
     param(
         [Parameter(Mandatory=$true)]
-        [string] $Name
+        [string] $Name,
+        [Parameter(Mandatory=$true)]
+        [ValidateSet("web", "console", "classlib")]
+        [string] $ProjectType
     )
 
     $testProject = $Name + ".UnitTests"
 
-    & "dotnet" "new" "web" "--name" $Name
+    & "dotnet" "new" $ProjectType "--name" $Name
     & "dotnet" "new" "xunit" "--name" $testProject
 
     & "dotnet" "new" "sln" "--name" $Name
@@ -107,11 +112,11 @@ function Invoke-PopulateProjectGuidFromSolution {
 Write-Output "Creating template project for '$Prefix' with type '$ProjectType'"
 
 switch($ProjectType) {
-    "webapp" { 
-        New-WebProject -Name $Prefix
-    }
     "function" { 
         New-FunctionProject -Name $Prefix
+    }
+    default {
+        New-BasicProject -Name $Prefix -ProjectType $ProjectType
     }
 }
 
