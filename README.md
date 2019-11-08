@@ -10,7 +10,9 @@ to create the project structure and correctly populate the project guids in the 
 
 Supported project types are currently:
 
-* webapp
+* web
+* console
+* classlib
 * function
 
 Then delete this section, and remove the Scripts folder from the repo.
