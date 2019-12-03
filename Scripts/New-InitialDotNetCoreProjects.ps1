@@ -122,4 +122,10 @@ switch($ProjectType) {
 
 Write-Output "Updating project files with ProjectGuids from solution"
 Invoke-PopulateProjectGuidFromSolution -SolutionName "$($Prefix).sln"
+
+$PipelineContent = Get-Content -Path $PSScriptRoot\..\Resources\AzureDevOps\azure-pipelines.yml
+$PipelineContent = $PipelineContent -replace "__SolutionBaseName__", $Prefix
+Write-Output "Updating SolutionBaseName in azure-pipelines.yml to $Prefix"
+Set-Content -Path $PSScriptRoot\..\Resources\AzureDevOps\azure-pipelines.yml -Value $PipelineContent
+
 Write-Output "Done"
