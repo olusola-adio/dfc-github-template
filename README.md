@@ -1,6 +1,8 @@
 # Project template repository
 
-This directory contains a "template repo" for creating new repositories from
+This directory contains a "template repo" for creating new repositories from.
+
+It defaults to .dotnet core 2.2, but if you update global.json, it will support netcore 3.0 and 3.1.
 
 When using this,  please run
 
@@ -10,7 +12,7 @@ to create the project structure and correctly populate the project guids in the 
 
 Supported project types are currently:
 
-* web
+* mvc
 * console
 * classlib
 * function

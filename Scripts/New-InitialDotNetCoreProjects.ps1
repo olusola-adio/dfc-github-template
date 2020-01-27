@@ -15,7 +15,7 @@ A solution file called $Prefix.sln
 
 .PARAMETER ProjectType
 The type of project to create. Valid options are currently:
-* web
+* mvc
 * console
 * classlib
 * function
@@ -30,7 +30,7 @@ param(
     [Parameter(Mandatory=$true)]
     [string] $Prefix,
     [Parameter(Mandatory=$true)]
-    [ValidateSet("web", "console", "classlib", "function")]
+    [ValidateSet("mvc", "console", "classlib", "function")]
     [string] $ProjectType
 )
 
@@ -39,7 +39,7 @@ function New-BasicProject {
         [Parameter(Mandatory=$true)]
         [string] $Name,
         [Parameter(Mandatory=$true)]
-        [ValidateSet("web", "console", "classlib")]
+        [ValidateSet("mvc", "console", "classlib")]
         [string] $ProjectType
     )
 
